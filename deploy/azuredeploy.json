@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "htmlWebAppPlanName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "htmlWebAppPlanSKU": {
+      "type": "string",
+      "allowedValues": [
+        "Free",
+        "Shared",
+        "Basic",
+        "Standard"
+      ],
+      "defaultValue": "Free"
+    },
+    "htmlWebAppPlanWorkerSize": {
+      "type": "string",
+      "allowedValues": [
+        "0",
+        "1",
+        "2"
+      ],
+      "defaultValue": "0"
+    },
+    "htmlWebAppPlanWorkerCount": {
+      "type": "string",
+      "defaultValue": "1"
+    }
+  },
+  "variables": {
+    "htmlWebAppName": "[concat('htmlWebApp', uniqueString(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('htmlWebAppPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-06-01",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "htmlWebAppPlan"
+      },
+      "properties": {
+        "name": "[parameters('htmlWebAppPlanName')]",
+        "sku": "[parameters('htmlWebAppPlanSKU')]",
+        "workerSize": "[parameters('htmlWebAppPlanWorkerSize')]",
+        "numberOfWorkers": "[parameters('htmlWebAppPlanWorkerCount')]"
+      }
+    },
+    {
+      "name": "[variables('htmlWebAppName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', parameters('htmlWebAppPlanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('htmlWebAppPlanName'))]": "Resource",
+        "displayName": "htmlWebApp"
+      },
+      "properties": {
+        "name": "[variables('htmlWebAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', parameters('htmlWebAppPlanName'))]"
+      }
+    }
+  ],
+  "outputs": {
+    "webAppName": {
+      "type": "string",
+      "value": "[variables('htmlWebAppName')]"
+    },
+    "webAppUri": {
+      "type": "string",
+      "value": "[concat('http://',reference(resourceId('Microsoft.Web/sites', variables('htmlWebAppName'))).hostNames[0])]"
+    }
+  }
+}

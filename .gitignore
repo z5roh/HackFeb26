@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/
+/**/bin/
+/**/obj/
+/**/.ntvs_analysis.dat
+*.user
+/**/SimpleWebApp.deploy-readme.txt
+/**/SimpleWebApp.zip
+/**/SimpleWebApp.SourceManifest.xml
+/**/SimpleWebApp.SetParameters.xml
+/**/SimpleWebApp.deploy.cmd
+/packages
